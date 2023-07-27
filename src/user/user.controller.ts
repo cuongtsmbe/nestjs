@@ -21,9 +21,9 @@ export class UserController {
   async create(@Body() dtoUser: CreateUserDto) {
     const res = await this.userService.create(dtoUser);
     if (!res) {
-      return 'error in creating user';
+      return false;
     }
-    return 'user created successfully';
+    return true;
   }
 
   @Get(':user_id')
@@ -31,7 +31,7 @@ export class UserController {
     if (isNaN(Number(user_id))) {
       return 'Invalid id';
     }
-    const user: UserInterface[] = await this.userService.findByUserID(user_id);
+    const user: UserInterface = await this.userService.findByUserID(user_id);
     return user;
   }
 
@@ -43,7 +43,7 @@ export class UserController {
 
   @Put(':user_id')
   async update(@Param('user_id') user_id: bigint, @Body() body: UpdateUserDto) {
-    const newCoversation: any = await this.userService.update(user_id, body);
-    return newCoversation;
+    const user: any = await this.userService.update(user_id, body);
+    return user;
   }
 }

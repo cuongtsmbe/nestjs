@@ -17,8 +17,8 @@ export class UserService {
     return this.userRepository.save(this.userRepository.create(userDto));
   }
 
-  findByUserID(user_id: bigint): Promise<UserInterface[]> {
-    return this.userRepository.find({ where: { user_id } });
+  findByUserID(user_id: bigint): Promise<UserInterface> {
+    return this.userRepository.findOne({ where: { user_id } });
   }
 
   findAll(limit: number): Promise<UserInterface[]> {

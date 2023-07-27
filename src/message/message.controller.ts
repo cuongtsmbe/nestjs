@@ -22,36 +22,44 @@ export class MessageController {
   async create(@Body() dtoMessage: CreateMessageDto) {
     const res = await this.messageService.create(dtoMessage);
     if (!res) {
-      return 'error in creating coversation';
+      return false;
     }
-    return 'coversation created successfully';
+    return true;
   }
 
-  @Get(':id')
-  async findByID(@Param('id', ParseIntPipe) id: number) {
-    if (isNaN(id)) {
-      return 'Invalid id';
+  @Get(':message_id')
+  async findByID(@Param('message_id', ParseIntPipe) message_id: bigint) {
+    if (isNaN(Number(message_id))) {
+      return 'Invalid message_id';
     }
-    const conversation: MessageInterface[] = await this.messageService.find(id);
-    return conversation;
+    const message: MessageInterface = await this.messageService.find(
+      message_id,
+    );
+    return message;
   }
 
   @Get()
-  async findAll(@Query('limit', ParseIntPipe) limit: number) {
-    const conversations: Array<MessageInterface> =
-      await this.messageService.findAll(limit);
-    return conversations;
+  async findByCoversationID(
+    @Param('coversation_id') coversation_id: bigint,
+    @Query('limit', ParseIntPipe) limit: number,
+  ) {
+    const messages: Array<MessageInterface> =
+      await this.messageService.findByCoversationID(coversation_id, limit);
+    return messages;
   }
 
-  @Put(':id')
-  async update(@Param('id') id: string, @Body() body: UpdateMessageDto) {
-    const newCoversation: any = await this.messageService.update(id, body);
-    return newCoversation;
+  @Put(':message_id')
+  async update(
+    @Param('message_id') message_id: bigint,
+    @Body() body: UpdateMessageDto,
+  ) {
+    const message: any = await this.messageService.update(message_id, body);
+    return message;
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    const resultDel = await this.messageService.delete(id);
+  @Delete(':message_id')
+  async remove(@Param('message_id') message_id: bigint) {
+    const resultDel = await this.messageService.delete(message_id);
     return resultDel;
   }
 }

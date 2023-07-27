@@ -27,14 +27,14 @@ export class CoversationController {
     return 'coversation created successfully';
   }
 
-  @Get(':id')
-  async findByID(@Param('id', ParseIntPipe) id: number) {
-    if (isNaN(id)) {
+  @Get(':conversation_id')
+  async findByID(@Param('conversation_id') conversation_id: bigint) {
+    if (isNaN(Number(conversation_id))) {
       // ID must be number
       return 'Invalid id';
     }
-    const conversation: CoversationInterface[] =
-      await this.coversationsService.find(id);
+    const conversation: CoversationInterface =
+      await this.coversationsService.find(conversation_id);
     return conversation;
   }
 
@@ -45,15 +45,21 @@ export class CoversationController {
     return coversations;
   }
 
-  @Put(':id')
-  async update(@Param('id') id: string, @Body() body: UpdateCoversationDto) {
-    const newCoversation: any = await this.coversationsService.update(id, body);
+  @Put(':coversation_id')
+  async update(
+    @Param('coversation_id') coversation_id: bigint,
+    @Body() body: UpdateCoversationDto,
+  ) {
+    const newCoversation: any = await this.coversationsService.update(
+      coversation_id,
+      body,
+    );
     return newCoversation;
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    const resultDel = await this.coversationsService.delete(id);
+  @Delete(':coversation_id')
+  async remove(@Param('coversation_id') coversation_id: bigint) {
+    const resultDel = await this.coversationsService.delete(coversation_id);
     return resultDel;
   }
 }

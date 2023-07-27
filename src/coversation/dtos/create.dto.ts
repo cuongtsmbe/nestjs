@@ -1,5 +1,4 @@
 export class CreateCoversationDto {
-  coversation_id: bigint;
   name: string;
   avatar: string;
   type: number;

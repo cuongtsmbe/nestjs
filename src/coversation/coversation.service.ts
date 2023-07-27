@@ -12,11 +12,14 @@ export class CoversationsService {
     private conversationRepository: Repository<Coversation>,
   ) {}
 
-  find(id: number): Promise<any[]> {
-    return this.conversationRepository.find({ where: { id } });
+  find(coversation_id: bigint): Promise<CoversationInterface> {
+    return this.conversationRepository
+      .createQueryBuilder()
+      .where('coversation_id = :coversation_id', { coversation_id })
+      .getOne();
   }
 
-  async findAll(limit: number): Promise<CoversationInterface[]> {
+  findAll(limit: number): Promise<CoversationInterface[]> {
     return this.conversationRepository.find({
       take: limit,
     });
@@ -28,21 +31,22 @@ export class CoversationsService {
     );
   }
 
-  update(id: string, data: any): Promise<any> {
+  update(coversation_id: bigint, data: any): Promise<any> {
     return this.conversationRepository
       .createQueryBuilder()
       .update()
       .set(data)
-      .where('id = :id', { id })
+      .where('coversation_id = :coversation_id', { coversation_id })
       .execute();
   }
 
-  delete(id: string): Promise<any> {
+  //change status coversation_id is 0
+  delete(coversation_id: bigint): Promise<any> {
     return this.conversationRepository
       .createQueryBuilder()
-      .delete()
-      .from(Coversation)
-      .where('id = :id', { id })
+      .update()
+      .set({ status: 0 })
+      .where('coversation_id = :coversation_id', { coversation_id })
       .execute();
   }
 }
