@@ -7,9 +7,6 @@ import {
 } from 'class-validator';
 
 export class RegisterUserDto {
-  @IsNumber()
-  user_id: bigint;
-
   @IsString()
   avatar: string;
 
