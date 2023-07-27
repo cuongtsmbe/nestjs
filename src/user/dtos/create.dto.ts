@@ -7,11 +7,8 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
-  @IsNumber()
-  user_id: bigint;
-
   @IsString()
-  avatar: string;
+  avatar?: string;
 
   @IsString()
   name: string;
@@ -25,35 +22,37 @@ export class CreateUserDto {
   password: string;
 
   @IsString()
-  street: string;
+  street?: string;
 
   @IsString()
+  @IsNotEmpty()
   lat: string;
 
   @IsString()
+  @IsNotEmpty()
   lng: string;
 
   @IsNumber()
-  country_id: number;
+  country_id?: number;
 
   @IsNumber()
-  city_id: number;
+  city_id?: number;
 
   @IsNumber()
-  district_id: number;
+  district_id?: number;
 
   @IsNumber()
-  ward_id: number;
+  ward_id?: number;
 
   @IsString()
-  phone: string;
+  phone?: string;
 
   @IsString()
-  gender: string;
+  gender?: string;
 
   @IsString()
-  birthday: string;
+  birthday?: string;
 
   @IsDateString()
-  timestamp: Date;
+  timestamp?: Date;
 }
