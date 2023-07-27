@@ -1,6 +1,16 @@
-import { IsString, IsNumber, IsArray, IsDate } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsArray,
+  IsDate,
+  IsNotEmpty,
+} from 'class-validator';
 
 export class CreateCoversationDto {
+  @IsNumber()
+  @IsNotEmpty()
+  coversation_id: bigint;
+
   @IsString()
   name: string;
 
