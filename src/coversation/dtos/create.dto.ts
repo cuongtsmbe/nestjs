@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsString,
   IsNumber,
@@ -7,24 +8,24 @@ import {
 } from 'class-validator';
 
 export class CreateCoversationDto {
-  @IsNumber()
-  @IsNotEmpty()
-  coversation_id: bigint;
-
   @IsString()
+  @IsNotEmpty()
   name: string;
 
   @IsString()
   avatar: string;
 
   @IsNumber()
+  @IsNotEmpty()
   type: number;
 
   @IsArray()
   @IsNumber({}, { each: true })
+  @IsNotEmpty()
   members: number[];
 
   @IsNumber()
+  @IsNotEmpty()
   status: number;
 
   @IsDate()
@@ -34,5 +35,6 @@ export class CreateCoversationDto {
   last_activity: Date;
 
   @IsDate()
+  @Transform(({ value }) => new Date(value))
   timestamp: Date;
 }

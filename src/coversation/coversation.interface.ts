@@ -1,5 +1,4 @@
 export interface CoversationInterface {
-  id: number;
   coversation_id: bigint;
   name: string;
   avatar: string;

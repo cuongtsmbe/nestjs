@@ -3,8 +3,6 @@ import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
 @Entity('coversation')
 export class Coversation {
   @PrimaryGeneratedColumn()
-  id: number;
-
   @Column({ type: 'bigint' })
   coversation_id: bigint;
 

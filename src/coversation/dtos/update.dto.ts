@@ -1,28 +1,44 @@
+import { Transform } from 'class-transformer';
 import { IsString, IsArray, IsNumber, IsDate } from 'class-validator';
 
 export class UpdateCoversationDto {
   @IsString()
-  name: string;
+  name?: string;
 
   @IsString()
-  avatar: string;
+  avatar?: string;
 
   @IsNumber()
-  type: number;
+  type?: number;
 
   @IsArray()
   @IsNumber({}, { each: true })
-  members: number[];
+  members?: number[];
 
   @IsNumber()
-  status: number;
+  status?: number;
 
   @IsDate()
-  background: Date;
+  background?: Date;
 
   @IsDate()
-  last_activity: Date;
+  last_activity?: Date;
 
   @IsDate()
-  timestamp: Date;
+  @Transform(({ value }) => new Date(value))
+  timestamp?: Date;
+
+  // Hàm constructor để xử lý việc gán giá trị từ object vào DTO
+  constructor(partial: Partial<UpdateCoversationDto>) {
+    Object.assign(this, partial);
+    this.removeUndefinedProperties();
+  }
+
+  private removeUndefinedProperties() {
+    for (const key in this) {
+      if (this.hasOwnProperty(key) && this[key] === undefined) {
+        delete this[key];
+      }
+    }
+  }
 }
