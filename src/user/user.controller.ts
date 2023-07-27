@@ -37,7 +37,7 @@ export class UserController {
 
   @Get()
   async findAll(@Query('limit', ParseIntPipe) limit: number) {
-    const users: Array<UserInterface> = await this.userService.findAll(limit);
+    const users: UserInterface[] = await this.userService.findAll(limit);
     return users;
   }
 

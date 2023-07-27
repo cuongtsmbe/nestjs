@@ -17,14 +17,25 @@ export class UserService {
     return this.userRepository.save(this.userRepository.create(userDto));
   }
 
-  findByUserID(user_id: bigint): Promise<UserInterface> {
-    return this.userRepository.findOne({ where: { user_id } });
+  async findByUserID(user_id: bigint): Promise<UserInterface> {
+    const resultUser: UserInterface & { password: string } =
+      await this.userRepository.findOne({ where: { user_id } });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...resultWithoutPassword } = resultUser;
+    return resultWithoutPassword;
   }
 
-  findAll(limit: number): Promise<UserInterface[]> {
-    return this.userRepository.find({
-      take: limit,
-    });
+  async findAll(limit: number): Promise<UserInterface[]> {
+    const resultUsers: (UserInterface & { password: string })[] =
+      await this.userRepository.find({
+        take: limit,
+      });
+    const resultWithoutPassword: UserInterface[] = resultUsers.map(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ({ password, ...rest }) => rest,
+    );
+    return resultWithoutPassword;
   }
 
   update(user_id: bigint, data: UpdateUserDto): Promise<any> {
