@@ -3,6 +3,8 @@ export interface UserInterface {
   user_id: bigint;
   avatar: string;
   name: string;
+  email: string;
+  password: string;
   street: string;
   lat: string;
   lng: string;
