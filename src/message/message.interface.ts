@@ -1,5 +1,4 @@
 export class MessageInterface {
-  id: number;
   message_id: bigint;
   coversation_id: bigint;
   user_id: bigint;
