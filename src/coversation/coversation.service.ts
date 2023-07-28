@@ -41,7 +41,21 @@ export class CoversationsService {
       .getOne();
   }
 
-  findListCoversationByUserID(
+  async checkCoversationID(conversation_id: bigint): Promise<boolean> {
+    const message: MessageInterface = await this.messageRepository
+      .createQueryBuilder()
+      .where('coversation_id = :conversation_id', {
+        conversation_id,
+      })
+      .getOne();
+
+    if (!message) {
+      return false;
+    }
+    return true;
+  }
+
+  GetListCoversationByUserID(
     user_id: bigint,
     limit: number,
   ): Promise<CoversationInterface[]> {
