@@ -29,14 +29,16 @@ export class MessageController {
   @UseGuards(AuthGuard)
   @Post()
   async create(@Body() dtoMessage: CreateMessageDto, @Req() req) {
-    const conversation = await this.coversationsService.findOneCoversation(
+    //check coversation_id exist in DB
+    const e = await this.coversationsService.checkCoversationID(
       dtoMessage.coversation_id,
-      req.user_data.user_id,
     );
-    if (!conversation) {
+    if (!e) {
       throw new HttpException('Conversation not found', HttpStatus.NOT_FOUND);
     }
 
+    dtoMessage.user_id = req.user_data.user_id;
+    //create message
     const res = await this.messageService.create(dtoMessage);
     if (!res) {
       //500 Internal Server Error
