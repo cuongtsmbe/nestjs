@@ -9,6 +9,7 @@ import { MessageModule } from './message/message.module';
 import { OauthModule } from './oauth/oauth.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/ auth.module';
+import { JwtModule } from '@nestjs/jwt';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -27,6 +28,7 @@ import { AuthModule } from './auth/ auth.module';
     OauthModule,
     UserModule,
     AuthModule,
+    JwtModule,
   ],
   controllers: [AppController],
   providers: [AppService],
