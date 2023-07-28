@@ -8,6 +8,7 @@ import * as path from 'path';
 import { MessageModule } from './message/message.module';
 import { OauthModule } from './oauth/oauth.module';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/ auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -25,6 +26,7 @@ import { UserModule } from './user/user.module';
     MessageModule,
     OauthModule,
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
