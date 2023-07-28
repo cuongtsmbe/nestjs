@@ -1,9 +1,9 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import { Column, PrimaryGeneratedColumn, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('coversation')
 export class Coversation {
   @PrimaryGeneratedColumn()
-  @Column({ type: 'bigint' })
+  @PrimaryColumn({ type: 'bigint' })
   coversation_id: bigint;
 
   @Column({ type: 'text' })

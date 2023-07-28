@@ -7,6 +7,7 @@ import { User } from 'src/user/user.entity';
 import { AuthService } from './ auth.service';
 import { ConfigService } from '@nestjs/config';
 import { Oauth } from 'src/oauth/oauth.entity';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { Oauth } from 'src/oauth/oauth.entity';
       inject: [ConfigService],
     }),
     ConfigModule,
+    UserModule,
   ],
   controllers: [AuthController],
   providers: [AuthService],

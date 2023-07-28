@@ -1,0 +1,39 @@
+networks:
+  bot-network: # tên của network đc tạo 
+    driver: bridge
+
+services:
+  node-bot:
+    container_name: node-bot
+    build:
+      dockerfile: Dockerfile
+      context: . #address of Dockerfile
+    ports:
+      - "3001:3001"
+    networks:
+      - bot-network
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/nest
+    depends_on:
+      - redis
+    command:
+      - /bin/bash
+      - -c
+      - |
+        npm install
+        npm start
+  redis:
+    image: redis:7.0.10
+    container_name: redis-bot
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes: 
+      - ~/redis_data_test:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - bot-network
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    
