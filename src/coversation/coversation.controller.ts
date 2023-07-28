@@ -3,8 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
-  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -22,27 +23,46 @@ export class CoversationController {
   async create(@Body() dtoCoversation: CreateCoversationDto) {
     const res = await this.coversationsService.create(dtoCoversation);
     if (!res) {
-      return 'error in creating coversation';
+      //500 Internal Server Error
+      throw new HttpException(
+        'Failed to create coversation',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-    return 'coversation created successfully';
+    //201 Created
+    return {
+      status: HttpStatus.CREATED,
+      message: 'Coversation created successfully!',
+      data: res,
+    };
   }
 
   @Get(':conversation_id')
   async findByID(@Param('conversation_id') conversation_id: bigint) {
-    if (isNaN(Number(conversation_id))) {
-      // ID must be number
-      return 'Invalid id';
-    }
     const conversation: CoversationInterface =
       await this.coversationsService.find(conversation_id);
-    return conversation;
+
+    if (!conversation) {
+      throw new HttpException('conversation not found', HttpStatus.NOT_FOUND);
+    }
+
+    return {
+      status: HttpStatus.OK,
+      message: 'Get conversation successfully!',
+      data: conversation,
+    };
   }
 
   @Get()
-  async findAll(@Query('limit', ParseIntPipe) limit: number) {
+  async findAll(@Query('limit') limit: number) {
     const coversations: Array<CoversationInterface> =
       await this.coversationsService.findAll(limit);
-    return coversations;
+
+    return {
+      status: HttpStatus.CREATED,
+      message: 'Get all coversations successfully!',
+      data: coversations,
+    };
   }
 
   @Put(':coversation_id')
@@ -54,12 +74,31 @@ export class CoversationController {
       coversation_id,
       body,
     );
-    return newCoversation;
+    if (!newCoversation) {
+      throw new HttpException(
+        'Failed update coversation',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      status: HttpStatus.OK,
+      message: 'update coversation successfully!',
+      data: newCoversation,
+    };
   }
 
   @Delete(':coversation_id')
   async remove(@Param('coversation_id') coversation_id: bigint) {
     const resultDel = await this.coversationsService.delete(coversation_id);
-    return resultDel;
+    if (!resultDel) {
+      throw new HttpException('Coversation not found', HttpStatus.NOT_FOUND);
+    }
+
+    return {
+      status: HttpStatus.OK,
+      description: 'Coversation deleted successfully!',
+      data: resultDel,
+    };
   }
 }

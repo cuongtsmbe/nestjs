@@ -8,5 +8,6 @@ import { CoversationController } from './coversation.controller';
   imports: [TypeOrmModule.forFeature([Coversation])],
   controllers: [CoversationController],
   providers: [CoversationsService],
+  exports: [CoversationsService],
 })
 export class CoversationModule {}
