@@ -19,9 +19,11 @@ export class UpdateCoversationDto {
   status?: number;
 
   @IsDate()
+  @Transform(({ value }) => new Date(value))
   background?: Date;
 
   @IsDate()
+  @Transform(({ value }) => new Date(value))
   last_activity?: Date;
 
   @IsDate()
