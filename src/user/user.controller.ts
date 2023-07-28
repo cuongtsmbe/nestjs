@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -66,6 +67,33 @@ export class UserController {
     return {
       status: HttpStatus.CREATED,
       message: 'Get users all successfully!',
+      data: users,
+    };
+  }
+
+  //get users near me with maxdistance (KM)
+  @UseGuards(AuthGuard)
+  @Get('near-me')
+  async GetUsersNearMe(
+    @Query('limit') limit: number,
+    @Query('maxdistance') maxdistance: number,
+    @Req() req,
+  ) {
+    const me = await this.userService.findByUserID(req.user_data.user_id);
+    if (!me) {
+      throw new HttpException('user exist found', HttpStatus.NOT_FOUND);
+    }
+    const users: UserInterface[] = await this.userService.findUsersNearLocation(
+      me.user_id,
+      me.lat,
+      me.lng,
+      maxdistance,
+      limit,
+    );
+
+    return {
+      status: HttpStatus.CREATED,
+      message: 'Get users near me successfully!',
       data: users,
     };
   }
