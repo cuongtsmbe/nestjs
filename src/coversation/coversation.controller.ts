@@ -9,16 +9,20 @@ import {
   Post,
   Put,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { CoversationsService } from './coversation.service';
 import { CreateCoversationDto } from './dtos/create.dto';
 import { UpdateCoversationDto } from './dtos/update.dto';
 import { CoversationInterface } from './coversation.interface';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('coversations')
 export class CoversationController {
   constructor(private readonly coversationsService: CoversationsService) {}
 
+  @UseGuards(AuthGuard)
   @Post()
   async create(@Body() dtoCoversation: CreateCoversationDto) {
     const res = await this.coversationsService.create(dtoCoversation);
@@ -37,10 +41,17 @@ export class CoversationController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Get(':conversation_id')
-  async findByID(@Param('conversation_id') conversation_id: bigint) {
+  async findByID(
+    @Param('conversation_id') conversation_id: bigint,
+    @Req() req,
+  ) {
     const conversation: CoversationInterface =
-      await this.coversationsService.find(conversation_id);
+      await this.coversationsService.findOneCoversation(
+        conversation_id,
+        req.user_data.user_id,
+      );
 
     if (!conversation) {
       throw new HttpException('conversation not found', HttpStatus.NOT_FOUND);
@@ -53,18 +64,23 @@ export class CoversationController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Get()
-  async findAll(@Query('limit') limit: number) {
+  async findAll(@Query('limit') limit: number, @Req() req) {
     const coversations: Array<CoversationInterface> =
-      await this.coversationsService.findAll(limit);
+      await this.coversationsService.findListCoversationByUserID(
+        req.user_data.user_id,
+        limit,
+      );
 
     return {
       status: HttpStatus.CREATED,
-      message: 'Get all coversations successfully!',
+      message: 'Get all coversations of user successfully!',
       data: coversations,
     };
   }
 
+  @UseGuards(AuthGuard)
   @Put(':coversation_id')
   async update(
     @Param('coversation_id') coversation_id: bigint,
@@ -88,6 +104,7 @@ export class CoversationController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':coversation_id')
   async remove(@Param('coversation_id') coversation_id: bigint) {
     const resultDel = await this.coversationsService.delete(coversation_id);

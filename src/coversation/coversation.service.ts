@@ -4,25 +4,61 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCoversationDto } from './dtos/create.dto';
 import { CoversationInterface } from './coversation.interface';
+import { Message } from 'src/message/message.entity';
+import { MessageInterface } from 'src/message/message.interface';
 
 @Injectable()
 export class CoversationsService {
   constructor(
     @InjectRepository(Coversation)
     private conversationRepository: Repository<Coversation>,
+    @InjectRepository(Message)
+    private messageRepository: Repository<Message>,
   ) {}
 
-  find(coversation_id: bigint): Promise<CoversationInterface> {
+  async findOneCoversation(
+    conversation_id: bigint,
+    user_id: bigint,
+  ): Promise<CoversationInterface> {
+    //check coversation id is of user_id login
+    const message: MessageInterface = await this.messageRepository
+      .createQueryBuilder()
+      .where('coversation_id = :conversation_id AND user_id = :user_id', {
+        conversation_id,
+        user_id,
+      })
+      .getOne();
+
+    if (!message) {
+      return null;
+    }
+    //get coversation infomation
     return this.conversationRepository
       .createQueryBuilder()
-      .where('coversation_id = :coversation_id', { coversation_id })
+      .where('coversation_id = :conversation_id', {
+        conversation_id,
+      })
       .getOne();
   }
 
-  findAll(limit: number): Promise<CoversationInterface[]> {
-    return this.conversationRepository.find({
-      take: limit,
-    });
+  findListCoversationByUserID(
+    user_id: bigint,
+    limit: number,
+  ): Promise<CoversationInterface[]> {
+    return this.messageRepository
+      .createQueryBuilder('message')
+      .select('conversation.*')
+      .leftJoin(
+        Coversation,
+        'conversation',
+        'message.conversation_id = conversation.conversation_id',
+      )
+      .where('message.user_id = :user_id', {
+        user_id,
+      })
+      .addGroupBy('conversation.id')
+      .take(limit)
+      .getRawMany();
   }
 
   create(conversation: CreateCoversationDto): Promise<any> {
