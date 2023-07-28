@@ -50,6 +50,7 @@ export class AuthService {
   }
 
   private async generateToken(payload: { user_id: bigint; email: string }) {
+    //create token
     const access_token = await this.jwtService.signAsync(payload);
     const refresh_token = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('SECRET'),
@@ -72,5 +73,33 @@ export class AuthService {
     const hash = await bcrypt.hash(password, salt);
 
     return hash;
+  }
+
+  async refreshToken(refresh_token: string): Promise<any> {
+    try {
+      const verify = await this.jwtService.verifyAsync(refresh_token, {
+        secret: this.configService.get<string>('SECRET'),
+      });
+      const checkExistUser = await this.userRepository.findOneBy({
+        user_id: verify.user_id,
+        email: verify.email,
+      });
+      if (checkExistUser) {
+        return this.generateToken({
+          user_id: verify.user_id,
+          email: verify.email,
+        });
+      } else {
+        throw new HttpException(
+          'Refresh token is not valid',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    } catch (error) {
+      throw new HttpException(
+        'Refresh token is not valid',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

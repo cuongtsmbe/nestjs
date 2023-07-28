@@ -4,6 +4,9 @@ import {
   Post,
   ValidationPipe,
   UsePipes,
+  Headers,
+  HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { AuthService } from './ auth.service';
@@ -32,5 +35,15 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   login(@Body() loginUserDto: LoginUserDto): Promise<any> {
     return this.authService.login(loginUserDto);
+  }
+
+  @Post('refresh-token')
+  //generate new token
+  accessToken(@Headers('authorization') authorization: string): Promise<any> {
+    const [type, refresh_token] = authorization ? authorization.split(' ') : [];
+    if (type !== 'Bearer' || !refresh_token) {
+      throw new HttpException('Invalid refresh token', HttpStatus.UNAUTHORIZED);
+    }
+    return this.authService.refreshToken(refresh_token);
   }
 }
