@@ -102,6 +102,8 @@ export class MessageController {
 
   @UseGuards(AuthGuard)
   @Put(':message_id')
+  @ApiResponse({ status: 401, description: 'update message fail!' })
+  @UsePipes(ValidationPipe)
   async update(
     @Param('message_id') message_id: bigint,
     @Body() body: UpdateMessageDto,

@@ -9,18 +9,23 @@ import {
   Put,
   Query,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create.dto';
 import { UserInterface } from './user.interface';
 import { UpdateUserDto } from './dtos/update.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
   @UseGuards(AuthGuard)
   @Post()
+  @ApiResponse({ status: 401, description: 'create user fail!' })
+  @UsePipes(ValidationPipe)
   async create(@Body() dtoUser: CreateUserDto) {
     const res = await this.userService.create(dtoUser);
 
@@ -67,6 +72,8 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Put(':user_id')
+  @ApiResponse({ status: 401, description: 'upadte user fail!' })
+  @UsePipes(ValidationPipe)
   async update(@Param('user_id') user_id: bigint, @Body() body: UpdateUserDto) {
     const user: any = await this.userService.update(user_id, body);
     if (!user) {

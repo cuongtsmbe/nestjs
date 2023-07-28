@@ -88,6 +88,8 @@ export class CoversationController {
 
   @UseGuards(AuthGuard)
   @Put(':coversation_id')
+  @ApiResponse({ status: 401, description: 'update coversation fail!' })
+  @UsePipes(ValidationPipe)
   async update(
     @Param('coversation_id') coversation_id: bigint,
     @Body() body: UpdateCoversationDto,
