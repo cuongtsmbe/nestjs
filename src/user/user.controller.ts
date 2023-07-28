@@ -8,16 +8,18 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create.dto';
 import { UserInterface } from './user.interface';
 import { UpdateUserDto } from './dtos/update.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
+  @UseGuards(AuthGuard)
   @Post()
   async create(@Body() dtoUser: CreateUserDto) {
     const res = await this.userService.create(dtoUser);
@@ -37,6 +39,7 @@ export class UserController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Get(':user_id')
   async findByUserID(@Param('user_id') user_id: bigint) {
     const user: UserInterface = await this.userService.findByUserID(user_id);
@@ -51,6 +54,7 @@ export class UserController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   async findAll(@Query('limit') limit: number) {
     const users: UserInterface[] = await this.userService.findAll(limit);
@@ -61,6 +65,7 @@ export class UserController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Put(':user_id')
   async update(@Param('user_id') user_id: bigint, @Body() body: UpdateUserDto) {
     const user: any = await this.userService.update(user_id, body);
