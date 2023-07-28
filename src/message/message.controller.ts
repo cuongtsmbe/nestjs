@@ -11,6 +11,8 @@ import {
   Query,
   Req,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dtos/create.dto';
@@ -18,6 +20,7 @@ import { MessageInterface } from './message.interface';
 import { UpdateMessageDto } from './dtos/update.dto';
 import { CoversationsService } from 'src/coversation/coversation.service';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('message')
 export class MessageController {
@@ -28,6 +31,8 @@ export class MessageController {
 
   @UseGuards(AuthGuard)
   @Post()
+  @ApiResponse({ status: 401, description: 'create message fail!' })
+  @UsePipes(ValidationPipe)
   async create(@Body() dtoMessage: CreateMessageDto, @Req() req) {
     //check coversation_id exist in DB
     const e = await this.coversationsService.checkCoversationID(
@@ -47,7 +52,7 @@ export class MessageController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    //201 Created
+
     return {
       status: HttpStatus.CREATED,
       message: 'Message created successfully!',

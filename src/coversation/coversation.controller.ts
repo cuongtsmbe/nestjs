@@ -11,12 +11,15 @@ import {
   Query,
   Req,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CoversationsService } from './coversation.service';
 import { CreateCoversationDto } from './dtos/create.dto';
 import { UpdateCoversationDto } from './dtos/update.dto';
 import { CoversationInterface } from './coversation.interface';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('coversations')
 export class CoversationController {
@@ -24,6 +27,9 @@ export class CoversationController {
 
   @UseGuards(AuthGuard)
   @Post()
+  @ApiResponse({ status: 201, description: 'create coversation successfully!' })
+  @ApiResponse({ status: 401, description: 'create coversation fail!' })
+  @UsePipes(ValidationPipe)
   async create(@Body() dtoCoversation: CreateCoversationDto) {
     const res = await this.coversationsService.create(dtoCoversation);
     if (!res) {
