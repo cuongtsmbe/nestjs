@@ -66,9 +66,9 @@ export class CoversationController {
 
   @UseGuards(AuthGuard)
   @Get()
-  async findAll(@Query('limit') limit: number, @Req() req) {
+  async getListCoversation(@Query('limit') limit: number, @Req() req) {
     const coversations: Array<CoversationInterface> =
-      await this.coversationsService.findListCoversationByUserID(
+      await this.coversationsService.GetListCoversationByUserID(
         req.user_data.user_id,
         limit,
       );
