@@ -16,20 +16,22 @@ export class MessageService {
     return this.messageRepository.save(this.messageRepository.create(message));
   }
 
-  find(message_id: bigint): Promise<MessageInterface> {
-    return this.messageRepository.findOne({ where: { message_id } });
+  getOne(message_id: bigint, user_id: bigint): Promise<MessageInterface> {
+    return this.messageRepository.findOne({ where: { message_id, user_id } });
   }
 
-  async findByCoversationID(
+  //get list messages by coversation_id and user_id
+  async GetListByCoversationID(
     coversation_id: bigint,
+    user_id: bigint,
     limit: number,
   ): Promise<MessageInterface[]> {
-    return this.messageRepository.find({
-      where: {
-        coversation_id: coversation_id,
-      },
-      take: limit,
-    });
+    return this.messageRepository
+      .createQueryBuilder('message')
+      .where('message.coversation_id = :coversation_id', { coversation_id })
+      .andWhere('message.user_id = :user_id', { user_id })
+      .take(limit)
+      .getMany();
   }
 
   update(message_id: bigint, data: UpdateMessageDto): Promise<any> {

@@ -9,12 +9,15 @@ import {
   Post,
   Put,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dtos/create.dto';
 import { MessageInterface } from './message.interface';
 import { UpdateMessageDto } from './dtos/update.dto';
 import { CoversationsService } from 'src/coversation/coversation.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('message')
 export class MessageController {
@@ -23,10 +26,12 @@ export class MessageController {
     private readonly coversationsService: CoversationsService,
   ) {}
 
+  @UseGuards(AuthGuard)
   @Post()
-  async create(@Body() dtoMessage: CreateMessageDto) {
-    const conversation = await this.coversationsService.find(
+  async create(@Body() dtoMessage: CreateMessageDto, @Req() req) {
+    const conversation = await this.coversationsService.findOneCoversation(
       dtoMessage.coversation_id,
+      req.user_data.user_id,
     );
     if (!conversation) {
       throw new HttpException('Conversation not found', HttpStatus.NOT_FOUND);
@@ -48,10 +53,12 @@ export class MessageController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Get(':message_id')
-  async findByID(@Param('message_id') message_id: bigint) {
-    const message: MessageInterface = await this.messageService.find(
+  async findByID(@Param('message_id') message_id: bigint, @Req() req) {
+    const message: MessageInterface = await this.messageService.getOne(
       message_id,
+      req.user_data.user_id,
     );
 
     if (!message) {
@@ -65,17 +72,20 @@ export class MessageController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Get()
-  async findByCoversationID(
+  async GetListByCoversationID(
     @Param('coversation_id') coversation_id: bigint,
     @Query('limit') limit: number,
+    @Req() req,
   ) {
-    const conversation = await this.coversationsService.find(coversation_id);
-    if (!conversation) {
-      throw new HttpException('Conversation not found', HttpStatus.NOT_FOUND);
-    }
     const messages: Array<MessageInterface> =
-      await this.messageService.findByCoversationID(coversation_id, limit);
+      await this.messageService.GetListByCoversationID(
+        coversation_id,
+        req.user_data.user_id,
+        limit,
+      );
+
     return {
       status: HttpStatus.CREATED,
       message: 'Get messages by coversation successfully!',
@@ -83,6 +93,7 @@ export class MessageController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Put(':message_id')
   async update(
     @Param('message_id') message_id: bigint,
@@ -104,6 +115,7 @@ export class MessageController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':message_id')
   async remove(@Param('message_id') message_id: bigint) {
     const resultDel = await this.messageService.delete(message_id);
