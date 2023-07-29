@@ -8,10 +8,10 @@ import {
 
 export class RegisterUserDto {
   @IsString()
-  avatar: string;
+  avatar?: string;
 
   @IsString()
-  name: string;
+  name?: string;
 
   @IsEmail()
   @IsNotEmpty()
@@ -22,35 +22,37 @@ export class RegisterUserDto {
   password: string;
 
   @IsString()
-  street: string;
+  street?: string;
 
   @IsString()
+  @IsNotEmpty()
   lat: string;
 
   @IsString()
+  @IsNotEmpty()
   lng: string;
 
   @IsNumber()
-  country_id: number;
+  country_id?: number;
 
   @IsNumber()
-  city_id: number;
+  city_id?: number;
 
   @IsNumber()
-  district_id: number;
+  district_id?: number;
 
   @IsNumber()
-  ward_id: number;
+  ward_id?: number;
 
   @IsString()
-  phone: string;
+  phone?: string;
 
   @IsString()
-  gender: string;
+  gender?: string;
 
   @IsString()
-  birthday: string;
+  birthday?: string;
 
   @IsDateString()
-  timestamp: Date;
+  timestamp?: Date;
 }

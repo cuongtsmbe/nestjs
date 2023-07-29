@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
@@ -20,8 +20,21 @@ export class UserService {
   async findByUserID(user_id: bigint): Promise<UserInterface> {
     const resultUser: UserInterface & { password: string } =
       await this.userRepository.findOne({ where: { user_id } });
-
+    if (!resultUser) {
+      return null;
+    }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...resultWithoutPassword } = resultUser;
+    return resultWithoutPassword;
+  }
+
+  async findByEmail(email: string): Promise<UserInterface> {
+    const resultUser: UserInterface & { password: string } =
+      await this.userRepository.findOne({ where: { email } });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    if (!resultUser) {
+      return null;
+    }
     const { password, ...resultWithoutPassword } = resultUser;
     return resultWithoutPassword;
   }

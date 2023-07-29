@@ -7,20 +7,34 @@ import {
   Headers,
   HttpStatus,
   HttpException,
+  ConflictException,
 } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { AuthService } from './ auth.service';
 import { UserInterface } from 'src/user/user.interface';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserService } from 'src/user/user.service';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UserService,
+  ) {}
 
   @Post('register')
+  //@UsePipes(ValidationPipe)
   async register(@Body() registerUserDto: RegisterUserDto): Promise<any> {
+    const userExist: UserInterface = await this.userService.findByEmail(
+      registerUserDto.email,
+    );
+    if (!registerUserDto.email || userExist != null) {
+      throw new ConflictException(
+        'Email address already exists OR email empty.',
+      );
+    }
     const authResult: UserInterface & { password } =
       await this.authService.register(registerUserDto);
 
