@@ -51,7 +51,7 @@ export class AuthController {
     return this.authService.login(loginUserDto);
   }
 
-  @Post('refresh-token')
+  @Post('refreshtoken')
   //generate new token
   accessToken(@Headers('authorization') authorization: string): Promise<any> {
     const [type, refresh_token] = authorization ? authorization.split(' ') : [];
