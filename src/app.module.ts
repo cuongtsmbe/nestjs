@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CoversationModule } from './coversation/coversation.module';
 import * as path from 'path';
 import { MessageModule } from './message/message.module';
@@ -10,6 +10,8 @@ import { OauthModule } from './oauth/oauth.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/ auth.module';
 import { JwtModule } from '@nestjs/jwt';
+import { RedisModule } from './redis/redis.module';
+import { RedisService } from './redis/redis.service';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -29,8 +31,9 @@ import { JwtModule } from '@nestjs/jwt';
     UserModule,
     AuthModule,
     JwtModule,
+    RedisModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ConfigService, RedisService],
 })
 export class AppModule {}
