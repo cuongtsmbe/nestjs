@@ -61,16 +61,16 @@ export class CoversationsService {
   ): Promise<CoversationInterface[]> {
     return this.messageRepository
       .createQueryBuilder('message')
-      .select('conversation.*')
+      .select('coversation.*')
       .leftJoin(
         Coversation,
-        'conversation',
-        'message.conversation_id = conversation.conversation_id',
+        'coversation',
+        'message.coversation_id = coversation.coversation_id',
       )
       .where('message.user_id = :user_id', {
         user_id,
       })
-      .addGroupBy('conversation.id')
+      .addGroupBy('coversation.coversation_id')
       .take(limit)
       .getRawMany();
   }

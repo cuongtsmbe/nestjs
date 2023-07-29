@@ -20,10 +20,15 @@ import { UpdateCoversationDto } from './dtos/update.dto';
 import { CoversationInterface } from './coversation.interface';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiResponse } from '@nestjs/swagger';
+import { MessageService } from 'src/message/message.service';
+import { CreateMessageDto } from 'src/message/dtos/create.dto';
 
 @Controller('coversations')
 export class CoversationController {
-  constructor(private readonly coversationsService: CoversationsService) {}
+  constructor(
+    private readonly coversationsService: CoversationsService,
+    private readonly messageService: MessageService,
+  ) {}
 
   @UseGuards(AuthGuard)
   @Post()
@@ -43,6 +48,17 @@ export class CoversationController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+    //create message for coversation
+    const messExam: CreateMessageDto = {
+      coversation_id: res.coversation_id,
+      user_id: req.user_data.user_id,
+      type: 0,
+      message: 'hello!',
+      timestamp: new Date(),
+      status: 0,
+    };
+    await this.messageService.create(messExam);
+
     //201 Created
     return {
       status: HttpStatus.CREATED,
@@ -57,7 +73,6 @@ export class CoversationController {
     @Param('conversation_id') conversation_id: bigint,
     @Req() req,
   ) {
-    console.log(req.user_data);
     const conversation: CoversationInterface =
       await this.coversationsService.findOneCoversation(
         conversation_id,
