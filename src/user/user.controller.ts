@@ -70,10 +70,9 @@ export class UserController {
 
   //get users near me with maxdistance (KM)
   @UseGuards(AuthGuard)
-  @Get('near-me')
+  @Get('find/nearme')
   async GetUsersNearMe(
-    @Query('limit') limit: number,
-    @Query('maxdistance') maxdistance: number,
+    @Query() query: { limit: number; maxdistance: number },
     @Req() req,
   ) {
     const me = await this.userService.findByUserID(req.user_data.user_id);
@@ -84,8 +83,8 @@ export class UserController {
       me.user_id,
       me.lat,
       me.lng,
-      maxdistance,
-      limit,
+      query.maxdistance,
+      query.limit,
     );
 
     return {

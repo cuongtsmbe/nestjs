@@ -19,7 +19,9 @@ export class UserService {
 
   async findByUserID(user_id: bigint): Promise<UserInterface> {
     const resultUser: UserInterface & { password: string } =
-      await this.userRepository.findOne({ where: { user_id } });
+      await this.userRepository.findOne({
+        where: { user_id: user_id },
+      });
     if (!resultUser) {
       return null;
     }
@@ -73,14 +75,20 @@ export class UserService {
         .createQueryBuilder('user')
         .select()
         .where('user.user_id != :user_id', { user_id })
-        .andWhere(`ABS(user.lat - :myLat) <= :maxDistanceInDegree`, {
-          myLat,
-          maxDistanceInDegree,
-        })
-        .andWhere(`ABS(user.lng - :myLng) <= :maxDistanceInDegree`, {
-          myLng,
-          maxDistanceInDegree,
-        })
+        .andWhere(
+          `ABS(CAST(user.lat AS FLOAT) - CAST(:myLat AS FLOAT)) <= :maxDistanceInDegree`,
+          {
+            myLat,
+            maxDistanceInDegree,
+          },
+        )
+        .andWhere(
+          `ABS(CAST(user.lng AS FLOAT) - CAST(:myLng AS FLOAT)) <= :maxDistanceInDegree`,
+          {
+            myLng,
+            maxDistanceInDegree,
+          },
+        )
         .take(limit)
         .getMany();
 
