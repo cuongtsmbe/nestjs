@@ -23,7 +23,6 @@ import { ApiResponse } from '@nestjs/swagger';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  @UseGuards(AuthGuard)
   @Post()
   @ApiResponse({ status: 401, description: 'create user fail!' })
   @UsePipes(ValidationPipe)
@@ -45,7 +44,6 @@ export class UserController {
     };
   }
 
-  @UseGuards(AuthGuard)
   @Get(':user_id')
   async findByUserID(@Param('user_id') user_id: bigint) {
     const user: UserInterface = await this.userService.findByUserID(user_id);
@@ -60,7 +58,6 @@ export class UserController {
     };
   }
 
-  @UseGuards(AuthGuard)
   @Get()
   async findAll(@Query('limit') limit: number) {
     const users: UserInterface[] = await this.userService.findAll(limit);
@@ -100,9 +97,16 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Put(':user_id')
-  @ApiResponse({ status: 401, description: 'upadte user fail!' })
+  @ApiResponse({ status: 401, description: 'update user fail!' })
   @UsePipes(ValidationPipe)
-  async update(@Param('user_id') user_id: bigint, @Body() body: UpdateUserDto) {
+  async update(
+    @Param('user_id') user_id: bigint,
+    @Body() body: UpdateUserDto,
+    @Req() req,
+  ) {
+    if (req.user_data.user_id != user_id) {
+      throw new HttpException('Failed update user ', HttpStatus.NOT_ACCEPTABLE);
+    }
     const user: any = await this.userService.update(user_id, body);
     if (!user) {
       throw new HttpException('Failed update user ', HttpStatus.NOT_FOUND);
