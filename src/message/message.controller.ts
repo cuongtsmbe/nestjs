@@ -107,7 +107,14 @@ export class MessageController {
   async update(
     @Param('message_id') message_id: bigint,
     @Body() body: UpdateMessageDto,
+    @Req() req,
   ) {
+    if (body.user_id != req.user_data.user_id) {
+      throw new HttpException(
+        'Failed update message',
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+    }
     const resultMessage: any = await this.messageService.update(
       message_id,
       body,
@@ -126,7 +133,16 @@ export class MessageController {
 
   @UseGuards(AuthGuard)
   @Delete(':message_id')
-  async remove(@Param('message_id') message_id: bigint) {
+  async remove(@Param('message_id') message_id: bigint, @Req() req) {
+    //check message is of user
+    const getMessage = await this.messageService.getOne(
+      message_id,
+      req.user_data.user_id,
+    );
+    if (!getMessage) {
+      throw new HttpException('Message not found', HttpStatus.NOT_FOUND);
+    }
+    //delete message
     const resultDel = await this.messageService.delete(message_id);
 
     if (!resultDel) {
