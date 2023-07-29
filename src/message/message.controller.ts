@@ -61,7 +61,7 @@ export class MessageController {
   }
 
   @UseGuards(AuthGuard)
-  @Get(':message_id')
+  @Get('one/:message_id')
   async findByID(@Param('message_id') message_id: bigint, @Req() req) {
     const message: MessageInterface = await this.messageService.getOne(
       message_id,
@@ -80,7 +80,7 @@ export class MessageController {
   }
 
   @UseGuards(AuthGuard)
-  @Get()
+  @Get('list/:coversation_id')
   async GetListByCoversationID(
     @Param('coversation_id') coversation_id: bigint,
     @Query('limit') limit: number,
