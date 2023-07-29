@@ -29,7 +29,7 @@ export class CoversationController {
   @Post()
   @ApiResponse({ status: 201, description: 'create coversation successfully!' })
   @ApiResponse({ status: 401, description: 'create coversation fail!' })
-  @UsePipes(ValidationPipe)
+  // @UsePipes(ValidationPipe)
   async create(@Body() dtoCoversation: CreateCoversationDto, @Req() req) {
     if (!dtoCoversation.members.includes(req.user_data.user_id)) {
       dtoCoversation.members.push(req.user_data.user_id);
@@ -57,6 +57,7 @@ export class CoversationController {
     @Param('conversation_id') conversation_id: bigint,
     @Req() req,
   ) {
+    console.log(req.user_data);
     const conversation: CoversationInterface =
       await this.coversationsService.findOneCoversation(
         conversation_id,

@@ -42,14 +42,14 @@ export class CoversationsService {
   }
 
   async checkCoversationID(conversation_id: bigint): Promise<boolean> {
-    const message: MessageInterface = await this.messageRepository
+    const coversation: any = await this.conversationRepository
       .createQueryBuilder()
       .where('coversation_id = :conversation_id', {
         conversation_id,
       })
       .getOne();
 
-    if (!message) {
+    if (!coversation) {
       return false;
     }
     return true;
