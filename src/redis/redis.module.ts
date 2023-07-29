@@ -11,7 +11,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useFactory: async (configService: ConfigService): Promise<any> => ({
         isGlobal: true,
         store: redisStore,
-        host: 'localhost',
+        host: process.env.REDIS_HOST,
         port: 6379,
         password: configService.get<string>('REDIS_PASSWORD'), // get password from ConfigService
         tls: process.env.REDIS_TLS,

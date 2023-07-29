@@ -11,8 +11,12 @@ export class AppController {
 
   @Get()
   async getHello(): Promise<string> {
-    await this.redisService.set('Hi', 'Nestjs Hi');
-    return String(this.redisService.get('Hi'));
-    //return this.appService.getHello();
+    try {
+      await this.redisService.set('Hi', 'Nestjs Hi');
+    } catch (e) {
+      console.log(e);
+    }
+    return String(await this.redisService.get('Hi'));
+    // return this.appService.getHello();
   }
 }

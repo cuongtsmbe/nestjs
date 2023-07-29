@@ -8,14 +8,14 @@ import { Cache } from 'cache-manager';
 
 @Injectable()
 export class RedisService {
-  constructor(
-    @Inject(CACHE_MANAGER)
-    private cacheManager: Cache,
-  ) {}
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+
   async set(key: string, value: unknown): Promise<void> {
     try {
       await this.cacheManager.set(key, value, 0);
     } catch (error) {
+      console.log({ error });
+
       throw new InternalServerErrorException();
     }
   }
