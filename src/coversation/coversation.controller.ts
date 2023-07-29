@@ -30,7 +30,11 @@ export class CoversationController {
   @ApiResponse({ status: 201, description: 'create coversation successfully!' })
   @ApiResponse({ status: 401, description: 'create coversation fail!' })
   @UsePipes(ValidationPipe)
-  async create(@Body() dtoCoversation: CreateCoversationDto) {
+  async create(@Body() dtoCoversation: CreateCoversationDto, @Req() req) {
+    if (!dtoCoversation.members.includes(req.user_data.user_id)) {
+      dtoCoversation.members.push(req.user_data.user_id);
+    }
+
     const res = await this.coversationsService.create(dtoCoversation);
     if (!res) {
       //500 Internal Server Error
@@ -86,7 +90,6 @@ export class CoversationController {
     };
   }
 
-  @UseGuards(AuthGuard)
   @Put(':coversation_id')
   @ApiResponse({ status: 401, description: 'update coversation fail!' })
   @UsePipes(ValidationPipe)
@@ -112,7 +115,6 @@ export class CoversationController {
     };
   }
 
-  @UseGuards(AuthGuard)
   @Delete(':coversation_id')
   async remove(@Param('coversation_id') coversation_id: bigint) {
     const resultDel = await this.coversationsService.delete(coversation_id);
