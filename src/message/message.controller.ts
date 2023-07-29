@@ -32,7 +32,7 @@ export class MessageController {
   @UseGuards(AuthGuard)
   @Post()
   @ApiResponse({ status: 401, description: 'create message fail!' })
-  @UsePipes(ValidationPipe)
+  // @UsePipes(ValidationPipe)
   async create(@Body() dtoMessage: CreateMessageDto, @Req() req) {
     //check coversation_id exist in DB
     const e = await this.coversationsService.checkCoversationID(
