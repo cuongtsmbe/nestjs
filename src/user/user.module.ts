@@ -6,10 +6,12 @@ import { Module } from '@nestjs/common';
 import { Oauth } from 'src/oauth/oauth.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { AuthModule } from 'src/auth/ auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Oauth])],
+  imports: [TypeOrmModule.forFeature([User, Oauth]), AuthModule],
   controllers: [UserController],
   providers: [UserService, JwtService, ConfigService],
+  exports:[UserService]
 })
 export class UserModule {}

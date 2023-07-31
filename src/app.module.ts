@@ -13,6 +13,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { RedisModule } from './redis/redis.module';
 import { RedisService } from './redis/redis.service';
 import { ElasticModule } from 'elasticsearch/elastic.module';
+import { ChatsModule } from './chats/chats.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ElasticModule } from 'elasticsearch/elastic.module';
     JwtModule,
     RedisModule,
     ElasticModule,
+    ChatsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService, RedisService],

@@ -9,6 +9,7 @@ import { User } from 'src/user/user.entity';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Oauth } from 'src/oauth/oauth.entity';
 import { CreateOauthDto } from 'src/oauth/dtos/create.dto';
+import { TokenDto } from './dto/token.dto';
 
 @Injectable()
 export class AuthService {
@@ -45,11 +46,11 @@ export class AuthService {
       );
     }
     //generate access token and refresh token
-    const payload = { user_id: user.user_id, email: user.email };
+    const payload: TokenDto = { user_id: user.user_id, email: user.email };
     return this.generateToken(payload);
   }
 
-  private async generateToken(payload: { user_id: bigint; email: string }) {
+  private async generateToken(payload: TokenDto) {
     //create token
     const access_token = await this.jwtService.signAsync(payload);
     const refresh_token = await this.jwtService.signAsync(payload, {
@@ -102,4 +103,20 @@ export class AuthService {
       );
     }
   }
+
+  public async getUserFromAuthenticationToken(token: string) {
+    try {
+      const payload = this.jwtService.decode(token);
+      return payload;
+    } catch {
+      throw new HttpException(
+        {
+          status: 419,
+          message: 'Token expired',
+        },
+        419,
+      );
+    }
+  }
+
 }
