@@ -112,9 +112,13 @@ export class AuthService {
 
   public getUserFromAuthenticationToken(token: string) {
     try {
-      const payload = this.jwtService.decode(token);
-
-      return payload;
+      const payload = this.jwtService.decode(token,{ json: true });
+      
+      if (typeof payload === 'object' && payload !== null) {
+        return payload.user_id;
+      } else {
+        throw new Error('Invalid payload format.');
+      }
     } catch {
       throw new HttpException(
         {
