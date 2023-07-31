@@ -39,5 +39,13 @@ export class ChatsService {
             fromUserId,
             message 
         });
-      }
+    }
+
+    //react typing of user
+    sendTyping(socket:Socket,data : { roomName: string, isTyping: true }){
+        socket.to(data.roomName).emit('typing', { 
+            isTyping: data.isTyping, 
+            user: socket.id 
+        });
+    }
 }

@@ -49,7 +49,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('add_friend')
     async handleAddFriendEvent(@MessageBody() friendId: string, @ConnectedSocket() socket: Socket) {
         try {
-            console.log(this.server.sockets.sockets.values());
             //const user = await this.chatsService.getUserFromSocket(socket);
 
             //add friends
@@ -72,7 +71,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('send_message')
     async sendForMessages(@MessageBody() messageJson: any, @ConnectedSocket() socket: Socket) {
-        //messageJson:{toUserId: number ; message : string}
         this.chatsService.sendMessage(socket,messageJson,this.connectedUsers);
     }
 
@@ -82,9 +80,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage('typing')
-    handleTypingEvent(@MessageBody() data: any, @ConnectedSocket() socket: Socket) {
-        const { roomName, isTyping } = data;
-        socket.to(roomName).emit('typing', { isTyping, user: socket.id });
+    handleTypingEvent(@MessageBody() data: { roomName: string, isTyping: true }, @ConnectedSocket() socket: Socket) {
+        this.chatsService.sendTyping(socket,data);
     }
 
     @SubscribeMessage('join_room')

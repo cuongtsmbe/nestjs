@@ -13,7 +13,7 @@ export class Friends {
 
 
   @Column()
-  status: number;
+  type: number;
 
   @Column({
     type: 'timestamp',
