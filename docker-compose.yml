@@ -36,4 +36,3 @@ services:
     networks:
       - bot-network
     command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
-    

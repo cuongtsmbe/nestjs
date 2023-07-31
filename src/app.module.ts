@@ -12,6 +12,8 @@ import { AuthModule } from './auth/ auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { RedisModule } from './redis/redis.module';
 import { RedisService } from './redis/redis.service';
+import { ElasticModule } from 'elasticsearch/elastic.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -32,6 +34,7 @@ import { RedisService } from './redis/redis.service';
     AuthModule,
     JwtModule,
     RedisModule,
+    ElasticModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService, RedisService],
