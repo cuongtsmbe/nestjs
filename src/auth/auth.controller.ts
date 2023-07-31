@@ -9,10 +9,10 @@ import {
   HttpException,
   ConflictException,
 } from '@nestjs/common';
-import { RegisterUserDto } from './dto/register-user.dto';
+import { RegisterUserDto } from './dtos/register-user.dto';
 import { AuthService } from './ auth.service';
 import { UserInterface } from 'src/user/user.interface';
-import { LoginUserDto } from './dto/login-user.dto';
+import { LoginUserDto } from './dtos/login-user.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from 'src/user/user.service';
 

@@ -14,6 +14,7 @@ import { RedisModule } from './redis/redis.module';
 import { RedisService } from './redis/redis.service';
 import { ElasticModule } from 'elasticsearch/elastic.module';
 import { ChatsModule } from './chats/chats.module';
+import { FriendsModule } from './friends/friends.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ChatsModule } from './chats/chats.module';
     RedisModule,
     ElasticModule,
     ChatsModule,
+    FriendsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService, RedisService],

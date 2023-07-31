@@ -3,13 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { RegisterUserDto } from './dto/register-user.dto';
+import { RegisterUserDto } from './dtos/register-user.dto';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/user/user.entity';
-import { LoginUserDto } from './dto/login-user.dto';
+import { LoginUserDto } from './dtos/login-user.dto';
 import { Oauth } from 'src/oauth/oauth.entity';
 import { CreateOauthDto } from 'src/oauth/dtos/create.dto';
-import { TokenDto } from './dto/token.dto';
+import { TokenDto } from './dtos/token.dto';
 
 @Injectable()
 export class AuthService {
@@ -46,17 +46,23 @@ export class AuthService {
       );
     }
     //generate access token and refresh token
-    const payload: TokenDto = { user_id: user.user_id, email: user.email };
+    const payload = { user_id: user.user_id, email: user.email };
     return this.generateToken(payload);
   }
 
   private async generateToken(payload: TokenDto) {
+
     //create token
-    const access_token = await this.jwtService.signAsync(payload);
+    const access_token = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('SECRET_ACCESS_TOKEN'),
+      expiresIn: this.configService.get<string>('EXP_IN_ACCESS_TOKEN'),
+    });
+
     const refresh_token = await this.jwtService.signAsync(payload, {
-      secret: this.configService.get<string>('SECRET'),
+      secret: this.configService.get<string>('SECRET_REFRESH_TOKEN'),
       expiresIn: this.configService.get<string>('EXP_IN_REFRESH_TOKEN'),
     });
+
     const oauth: CreateOauthDto = {
       user_id: payload.user_id,
       access_token: access_token,
@@ -79,7 +85,7 @@ export class AuthService {
   async refreshToken(refresh_token: string): Promise<any> {
     try {
       const verify = await this.jwtService.verifyAsync(refresh_token, {
-        secret: this.configService.get<string>('SECRET'),
+        secret: this.configService.get<string>('SECRET_REFRESH_TOKEN'),
       });
       const checkExistUser = await this.userRepository.findOneBy({
         user_id: verify.user_id,
@@ -104,9 +110,10 @@ export class AuthService {
     }
   }
 
-  public async getUserFromAuthenticationToken(token: string) {
+  public getUserFromAuthenticationToken(token: string) {
     try {
       const payload = this.jwtService.decode(token);
+
       return payload;
     } catch {
       throw new HttpException(

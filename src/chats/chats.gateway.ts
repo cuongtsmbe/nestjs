@@ -28,13 +28,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage('send_message')
-    async listenForMessages(@MessageBody() message: string, @ConnectedSocket() socket: Socket) {
-
-        const user = await this.chatsService.getUserFromSocket(socket)
+    async sendForMessages(@MessageBody() message: string, @ConnectedSocket() socket: Socket) {
+        const user =await this.chatsService.getUserFromSocket(socket)
         this.server.sockets.emit('receive_message', {
             message,
             user
         });
+    }
+
+    @SubscribeMessage('receive_message')
+    async listenForMessages(@MessageBody() message: string, @ConnectedSocket() socket: Socket) {
+        console.log("receive_message",message);
+    }
+
+    @SubscribeMessage('typing')
+    handleTypingEvent(@MessageBody() data: any, @ConnectedSocket() socket: Socket) {
+        const { roomName, isTyping } = data;
+        socket.to(roomName).emit('typing', { isTyping, user: socket.id });
     }
 
     @SubscribeMessage('join_room')
