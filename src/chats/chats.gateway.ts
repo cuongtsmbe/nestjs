@@ -2,6 +2,7 @@ import {
     ConnectedSocket,
     MessageBody,
     OnGatewayConnection,
+    OnGatewayDisconnect,
     SubscribeMessage,
     WebSocketGateway,
     WebSocketServer,
@@ -10,7 +11,7 @@ import { Server, Socket } from 'socket.io';
 import { ChatsService } from './chats.service';
 
 @WebSocketGateway()
-export class ChatGateway implements OnGatewayConnection {
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect { 
     @WebSocketServer()
     server: Server;
 
@@ -20,6 +21,10 @@ export class ChatGateway implements OnGatewayConnection {
         await this.chatsService.getUserFromSocket(socket)
         const socketId = socket.id;
         console.log('Connected socket ID:', socketId);
+    }
+
+    async handleDisconnect(socket: Socket) { 
+        console.log(`Socket with ID ${socket.id} disconnected.`);
     }
 
     @SubscribeMessage('send_message')
