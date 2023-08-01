@@ -60,7 +60,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage('receive_message')
-    async listenForMessages(@MessageBody() message: string, @ConnectedSocket() socket: Socket) {
+    async listenForMessages(@MessageBody() message: string) {
         console.log("receive_message",message);
     }
 
