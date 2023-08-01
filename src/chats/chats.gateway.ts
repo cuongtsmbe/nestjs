@@ -10,22 +10,23 @@ import {
 import { Server, Socket } from 'socket.io';
 import { ChatsService } from './chats.service';
 import { MessageRoomDto } from './dtos/messageRoom.dto';
+import { RedisService } from 'src/redis/redis.service';
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect { 
     @WebSocketServer()
     server: Server;
-    private connectedUsers: { [user_id: string]: Socket } = {};
 
     constructor(
-        private chatsService: ChatsService
+        private chatsService: ChatsService,
+        private redisService: RedisService
     ) {}
 
     async handleConnection(socket: Socket) {
         const user_id= await this.chatsService.getUserFromSocket(socket)
         if (user_id) {
             // Storing the socket instance in the dictionary with user ID as the key
-            this.connectedUsers[user_id] = socket;
+            await this.redisService.setConnectedUser(user_id, socket.id);
             console.log('Connected user_id:', user_id);
         } else {
             console.log('An unauthenticated socket connected.');
@@ -38,8 +39,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     async handleDisconnect(socket: Socket) { 
         const user_id = await this.chatsService.getUserFromSocket(socket);
         if (user_id) {
-
-            delete this.connectedUsers[user_id];
+            await this.redisService.removeConnectedUser(user_id);
             console.log(`Socket with ID ${socket.id} and user ID ${user_id} disconnected(offline).`);
 
         } else {
@@ -50,7 +50,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('send_message')
     async sendForMessages(@MessageBody() messageJson: any, @ConnectedSocket() socket: Socket) {
-        this.chatsService.sendMessage(socket,messageJson,this.connectedUsers);
+        const socket_id =await this.redisService.getConnectedUser("user_id"+messageJson.toUserId);
+        this.chatsService.sendMessage(socket,messageJson,socket_id,this.server);
+    }
+
+    @SubscribeMessage('online')
+    async sendStatusOnline(@MessageBody() messageJson: any, @ConnectedSocket() socket: Socket) {
+        this.chatsService.sendOnline(socket,messageJson,this.server);
     }
 
     @SubscribeMessage('receive_message')

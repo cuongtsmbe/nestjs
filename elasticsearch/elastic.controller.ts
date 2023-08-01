@@ -23,14 +23,6 @@ export class ElasticController {
                 must: [
                   {
                     match_phrase: {
-                      toFriends: {
-                        query: user_id,
-                        slop: 1,
-                      },
-                    },
-                  },
-                  {
-                    match_phrase: {
                         message: message,
                     },
                   },

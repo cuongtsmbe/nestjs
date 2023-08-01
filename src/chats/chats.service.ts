@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { ElasticService } from 'elasticsearch/elastic.service';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/ auth.service';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class ChatsService {
-    constructor(private authService: AuthService,
+    constructor(
+        private authService: AuthService,
         private elasticService: ElasticService,
+        private redisService: RedisService
         ) {}
     getUserFromSocket(socket: Socket) {
         try{
@@ -29,12 +32,10 @@ export class ChatsService {
     }
 
     //user A send message to B
-    async sendMessage(socket: Socket,data: {toUserId: string, message: string},connectedUsers: { [user_id: string]: Socket } ) {
-  
+    async sendMessage(socket: Socket,data: {toUserId: string, message: string}, socket_id: string,server:Server ) {
         const fromUserId = this.getUserFromSocket(socket);
-        const toSocket = connectedUsers[data.toUserId];
     
-        if (!toSocket) {
+        if (!socket_id) {
           throw new Error('User B is not currently connected.');
         }
 
@@ -47,7 +48,7 @@ export class ChatsService {
 
         const message=data.message;
         // Sending the message to user received
-        toSocket.emit('receive_message', {
+        server.to(socket_id).emit('receive_message', {
             fromUserId,
             message 
         });
@@ -67,6 +68,19 @@ export class ChatsService {
             message: data.message, 
             userSend: fromUserId 
         });
+    }
+
+    //send all user online in server
+    async sendOnline(socket: Socket,messageJson: any,server:Server){
+        const userIdOnline:string[]= await this.redisService.getKeysWithPrefix("user_id");
+        let socketIdOnline;
+        for (let i = 0; i < userIdOnline.length; i++) {
+            socketIdOnline = await this.redisService.getConnectedUser(userIdOnline[i]);
+            console.log(userIdOnline[i],socketIdOnline);
+            if(socket.id!=socketIdOnline){
+                server.to(socketIdOnline).emit('receive_message', messageJson);
+            }
+        }
     }
 
 }
