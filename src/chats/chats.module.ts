@@ -9,10 +9,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/user.entity';
 import { Oauth } from 'src/oauth/oauth.entity';
 import { ChatGateway } from './chats.gateway';
+import { ElasticService } from 'elasticsearch/elastic.service';
+import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { ElasticModule } from 'elasticsearch/elastic.module';
 
 @Module({
   
   imports:[AuthModule,
+
      TypeOrmModule.forFeature([User, Oauth]),
      JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -26,6 +30,7 @@ import { ChatGateway } from './chats.gateway';
       inject: [ConfigService],
     }),
     ConfigModule,
+    ElasticModule,
   ],
   controllers: [ChatsController],
   providers: [ChatsService, AuthService,ChatGateway]

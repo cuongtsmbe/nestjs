@@ -15,7 +15,7 @@ export class ElasticController {
     }
 
     @Get('search')
-    async searchMessages(@Query("name") name: string,@Query("address") address: string): Promise<any> {
+    async searchMessages(@Query("user_id") user_id: string,@Query("message") message: string): Promise<any> {
         const index = 'messages';
         const searchQuery = {
             query: {
@@ -23,15 +23,15 @@ export class ElasticController {
                 must: [
                   {
                     match_phrase: {
-                      ten: {
-                        query: name,
+                      toFriends: {
+                        query: user_id,
                         slop: 1,
                       },
                     },
                   },
                   {
                     match_phrase: {
-                      address: address,
+                        message: message,
                     },
                   },
                 ],
