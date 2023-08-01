@@ -6,6 +6,7 @@ import {
   OnModuleDestroy,
 } from '@nestjs/common';
 import { REDIS_CLIENT, RedisClient } from './redis-client.type';
+import { UserInterface } from 'src/user/user.interface';
 
 @Injectable()
 export class RedisService implements OnModuleDestroy {
@@ -29,9 +30,9 @@ export class RedisService implements OnModuleDestroy {
     }
   }
 
-  async get(key:string){
+  async get(key:string):Promise<UserInterface>{
     try {
-        return await this.redis.get(key);
+        return JSON.parse(await this.redis.get(key));
     } catch (error) {
             throw new InternalServerErrorException();
     }

@@ -19,10 +19,14 @@ import { UserInterface } from './user.interface';
 import { UpdateUserDto } from './dtos/update.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiResponse } from '@nestjs/swagger';
+import { RedisService } from 'src/redis/redis.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private redisService: RedisService
+  ) {}
   @Post()
   @ApiResponse({ status: 401, description: 'create user fail!' })
   @UsePipes(ValidationPipe)
@@ -46,15 +50,20 @@ export class UserController {
 
   @Get(':user_id')
   async findByUserID(@Param('user_id') user_id: bigint) {
-    const user: UserInterface = await this.userService.findByUserID(user_id);
-    if (!user) {
-      throw new HttpException('user not found', HttpStatus.NOT_FOUND);
+    let userDetails:UserInterface= await this.redisService.get(String(user_id));
+    if(!userDetails){
+      const user: UserInterface = await this.userService.findByUserID(user_id);
+      if (!user) {
+        throw new HttpException('user not found', HttpStatus.NOT_FOUND);
+      }
+      await this.redisService.set(String(user_id),JSON.stringify(user));
+      userDetails = user;
     }
 
     return {
       status: HttpStatus.OK,
       message: 'Get user successfully!',
-      data: user,
+      data: userDetails,
     };
   }
 

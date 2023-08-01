@@ -47,30 +47,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
-
-    @SubscribeMessage('add_friend')
-    async handleAddFriendEvent(@MessageBody() friendId: string, @ConnectedSocket() socket: Socket) {
-        try {
-            //const user = await this.chatsService.getUserFromSocket(socket);
-
-            //add friends
-           
-            // Notify the user about the successful friend request
-            // const friend = await this.chatsService.getUserById(friendId);
-            // socket.emit('friend_request_sent', friend);
-
-            // Notify the friend that they received a new friend request
-            // const friendSocket = this.findSocketByUserId(friend.id);
-            // if (friendSocket) {
-            //     friendSocket.emit('friend_request_received', user);
-            // }
-        } catch (error) {
-            // Handle errors if needed
-            console.error('Error adding friend:', error.message);
-        }
-    }
-
-
     @SubscribeMessage('send_message')
     async sendForMessages(@MessageBody() messageJson: any, @ConnectedSocket() socket: Socket) {
         this.chatsService.sendMessage(socket,messageJson,this.connectedUsers);
