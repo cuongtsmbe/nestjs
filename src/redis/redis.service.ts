@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { REDIS_CLIENT, RedisClient } from './redis-client.type';
 import { UserInterface } from 'src/user/user.interface';
-import { Socket } from 'socket.io';
 
 @Injectable()
 export class RedisService implements OnModuleDestroy {
