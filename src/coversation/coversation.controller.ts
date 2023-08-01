@@ -36,35 +36,51 @@ export class CoversationController {
   @ApiResponse({ status: 401, description: 'create coversation fail!' })
   // @UsePipes(ValidationPipe)
   async create(@Body() dtoCoversation: CreateCoversationDto, @Req() req) {
-    if (!dtoCoversation.members.includes(req.user_data.user_id)) {
-      dtoCoversation.members.push(req.user_data.user_id);
-    }
-
-    const res = await this.coversationsService.create(dtoCoversation);
-    if (!res) {
-      //500 Internal Server Error
+    //lấy tất cả user unique + sắp xếp user_id tăng dần 
+    dtoCoversation.members.push(+req.user_data.user_id)
+    const members = [...new Set(dtoCoversation.members)];
+    members.sort((a, b) => a - b);
+   
+    if(members.length<2){
       throw new HttpException(
-        'Failed to create coversation',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        'Failed to create coversation had members < 2',
+        HttpStatus.BAD_REQUEST,
       );
     }
-    //create message for coversation
-    const messExam: CreateMessageDto = {
-      coversation_id: res.coversation_id,
-      user_id: req.user_data.user_id,
-      type: 0,
-      message: 'hello!',
-      timestamp: new Date(),
-      status: 0,
-    };
-    await this.messageService.create(messExam);
+    dtoCoversation.members= members;
 
-    //201 Created
-    return {
-      status: HttpStatus.CREATED,
-      message: 'Coversation created successfully!',
-      data: res,
-    };
+    console.log("members: ",dtoCoversation.members);
+    //tìm coversation đã tồn tại hay chưa
+    const checkCoversation=await this.coversationsService.findConversationByMembers(dtoCoversation.members);
+    if(!checkCoversation){
+      const res = await this.coversationsService.create(dtoCoversation);
+      if (!res) {
+        //500 Internal Server Error
+        throw new HttpException(
+          'Failed to create coversation',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+      //create message for coversation
+      const messExam: CreateMessageDto = {
+        coversation_id: res.coversation_id,
+        user_id: req.user_data.user_id,
+        type: 0,
+        message: 'hello!',
+        timestamp: new Date(),
+        status: 0,
+      };
+      await this.messageService.create(messExam);
+  
+      //201 Created
+      return {
+        status: HttpStatus.CREATED,
+        message: 'Coversation created successfully!',
+        data: res,
+      };
+    }
+    console.log("coversation exist in DB");
+    return checkCoversation;
   }
 
   @UseGuards(AuthGuard)

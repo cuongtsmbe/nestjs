@@ -41,6 +41,16 @@ export class CoversationsService {
       .getOne();
   }
 
+  async findConversationByMembers(members: number[]): Promise<CoversationInterface | null> {
+    // Find a conversation with the given members
+    const conversation: CoversationInterface = await this.conversationRepository
+      .createQueryBuilder()
+      .where('members = :members', { members: members })
+      .getOne();
+
+    return conversation || null;
+  }
+
   async checkCoversationID(conversation_id: bigint): Promise<boolean> {
     const coversation: any = await this.conversationRepository
       .createQueryBuilder()
