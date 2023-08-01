@@ -1,30 +1,39 @@
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
+
 import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  OnModuleDestroy,
 } from '@nestjs/common';
-import { Cache } from 'cache-manager';
+import { REDIS_CLIENT, RedisClient } from './redis-client.type';
 
 @Injectable()
-export class RedisService {
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+export class RedisService implements OnModuleDestroy {
+  public constructor(
+    @Inject(REDIS_CLIENT) private readonly redis: RedisClient,
+  ) {}
 
-  async set(key: string, value: unknown): Promise<void> {
-    try {
-      await this.cacheManager.set(key, value, 0);
+  onModuleDestroy() {
+    this.redis.quit();
+  }
+
+  ping() {
+    return this.redis.ping();
+  }
+
+  async set(key:string,value:string){
+    try{
+      return await this.redis.set(key,value);
     } catch (error) {
-      console.log({ error });
-
       throw new InternalServerErrorException();
     }
   }
 
-  async get(key: string): Promise<unknown> {
+  async get(key:string){
     try {
-      return await this.cacheManager.get(key);
+        return await this.redis.get(key);
     } catch (error) {
-      throw new InternalServerErrorException();
+            throw new InternalServerErrorException();
     }
   }
 }

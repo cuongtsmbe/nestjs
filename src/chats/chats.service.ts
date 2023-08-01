@@ -3,11 +3,13 @@ import { WsException } from '@nestjs/websockets';
 import { ElasticService } from 'elasticsearch/elastic.service';
 import { Socket } from 'socket.io';
 import { AuthService } from 'src/auth/ auth.service';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class ChatsService {
     constructor(private authService: AuthService,
-        private elasticService: ElasticService) {}
+        private elasticService: ElasticService,
+        private redisService: RedisService) {}
     getUserFromSocket(socket: Socket) {
         try{
             let auth_token = socket.handshake.headers['authorization'];
@@ -43,6 +45,9 @@ export class ChatsService {
             toFriends: data.toUserId,
             message: data.message
         });
+        
+        // this.redisService.set("ABC","AHN");
+        // console.log("redis",this.redisService.get("ABC"));
 
         const message=data.message;
         // Sending the message to user received
