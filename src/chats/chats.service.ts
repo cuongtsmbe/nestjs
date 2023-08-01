@@ -60,4 +60,13 @@ export class ChatsService {
             user: socket.id 
         });
     }
+
+    sendMessageInRoom(socket:Socket,data : { roomName: string, message: string }){
+        const fromUserId = this.getUserFromSocket(socket);
+        socket.to(data.roomName).emit('receive_message', { 
+            message: data.message, 
+            userSend: fromUserId 
+        });
+    }
+
 }

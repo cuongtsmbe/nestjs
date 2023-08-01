@@ -9,6 +9,7 @@ import {
   } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatsService } from './chats.service';
+import { MessageRoomDto } from './dtos/messageRoom.dto';
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect { 
@@ -55,6 +56,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('receive_message')
     async listenForMessages(@MessageBody() message: string, @ConnectedSocket() socket: Socket) {
         console.log("receive_message",message);
+    }
+
+    @SubscribeMessage('chat_room')
+    async sendMessageToRoom(@MessageBody() messageJson: MessageRoomDto, @ConnectedSocket() socket: Socket) {
+        this.chatsService.sendMessageInRoom(socket,messageJson);
     }
 
     @SubscribeMessage('typing')
