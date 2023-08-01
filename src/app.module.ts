@@ -12,7 +12,7 @@ import { AuthModule } from './auth/ auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { RedisModule } from './redis/redis.module';
 import { RedisService } from './redis/redis.service';
-import { ElasticModule } from 'elasticsearch/elastic.module';
+import { ElasticModule } from 'src/elasticsearch/elastic.module';
 import { ChatsModule } from './chats/chats.module';
 import { FriendsModule } from './friends/friends.module';
 

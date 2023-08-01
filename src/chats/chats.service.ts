@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import { ElasticService } from 'elasticsearch/elastic.service';
+import { ElasticService } from 'src/elasticsearch/elastic.service';
 import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/ auth.service';
 import { RedisService } from 'src/redis/redis.service';

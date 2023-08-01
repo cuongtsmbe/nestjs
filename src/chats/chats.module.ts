@@ -9,7 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/user.entity';
 import { Oauth } from 'src/oauth/oauth.entity';
 import { ChatGateway } from './chats.gateway';
-import { ElasticModule } from 'elasticsearch/elastic.module';
+import { ElasticModule } from 'src/elasticsearch/elastic.module';
 import { RedisModule } from '../redis/redis.module';
 
 @Module({
